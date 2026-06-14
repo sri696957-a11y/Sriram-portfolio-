@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sriram Rajasekaran — Cybersecurity Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0A0E1A;
+    --surface: #111827;
+    --surface2: #1A2236;
+    --cyan: #00D4FF;
+    --cyan-dim: rgba(0,212,255,0.12);
+    --orange: #FF6B35;
+    --muted: #8892A4;
+    --text: #C9D1E0;
+    --white: #EEF2FF;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Grid noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    background: rgba(10,14,26,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,212,255,0.1);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+  }
+
+  .nav-logo span { color: var(--muted); }
+
+  nav ul {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-family: var(--mono);
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--cyan); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 2rem 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-inner {
+    max-width: 860px;
+    width: 100%;
+  }
+
+  /* Terminal window */
+  .terminal {
+    background: #0D1117;
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(0,212,255,0.08), 0 20px 60px rgba(0,0,0,0.6);
+    margin-bottom: 2.5rem;
+  }
+
+  .terminal-bar {
+    background: #1A2236;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #FF5F57; }
+  .dot-yellow { background: #FEBC2E; }
+  .dot-green { background: #28C840; }
+
+  .terminal-title {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-left: 0.5rem;
+  }
+
+  .terminal-body {
+    padding: 1.5rem 2rem 2rem;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    line-height: 1.9;
+  }
+
+  .term-prompt { color: var(--cyan); }
+  .term-cmd { color: var(--white); }
+  .term-comment { color: #4B5563; }
+  .term-key { color: #FF6B35; }
+  .term-val { color: #A5F3A5; }
+  .term-output { color: var(--muted); }
+
+  .typed-line { overflow: hidden; white-space: nowrap; }
+
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    background: var(--cyan);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* Hero text below terminal */
+  .hero-tagline {
+    font-size: 0.85rem;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-tagline::before {
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 1px;
+    background: var(--cyan);
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--cyan);
+    color: #0A0E1A;
+    font-weight: 700;
+  }
+
+  .btn-primary:hover { background: #33DDFF; transform: translateY(-2px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--cyan);
+    border: 1px solid rgba(0,212,255,0.4);
+  }
+
+  .btn-outline:hover { border-color: var(--cyan); background: var(--cyan-dim); transform: translateY(-2px); }
+
+  /* Glow orb */
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 5rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--cyan);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-family: var(--sans);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 2.5rem;
+  }
+
+  /* SKILLS GRID */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .skill-card {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 1.4rem 1.5rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .skill-card:hover {
+    border-color: rgba(0,212,255,0.3);
+    transform: translateY(-3px);
+  }
+
+  .skill-card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .skill-card-title {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 4px;
+    color: var(--text);
+  }
+
+  /* LABS */
+  .labs-list { display: flex; flex-direction: column; gap: 1rem; }
+
+  .lab-item {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 1rem;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    transition: border-color 0.2s;
+  }
+
+  .lab-item:hover { border-color: rgba(255,107,53,0.4); }
+
+  .lab-num {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--orange);
+    padding-top: 0.1rem;
+  }
+
+  .lab-title {
+    font-weight: 600;
+    color: var(--white);
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .lab-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .lab-tags { margin-top: 0.6rem; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+  .lab-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    background: rgba(255,107,53,0.1);
+    border: 1px solid rgba(255,107,53,0.2);
+    border-radius: 3px;
+    color: var(--orange);
+  }
+
+  /* EDUCATION & CERT */
+  .timeline { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-left: 3px solid var(--cyan);
+    border-radius: 0 10px 10px 0;
+    padding: 1.5rem;
+  }
+
+  .timeline-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .timeline-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.25rem;
+  }
+
+  .timeline-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .timeline-desc {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .about-text p { color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem; }
+  .about-text p strong { color: var(--white); }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid rgba(0,212,255,0.12);
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cyan);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.25rem;
+  }
+
+  /* CONTACT */
+  .contact-box {
+    background: var(--surface);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+  }
+
+  .contact-box p { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 2rem;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    position: relative;
+    z-index: 1;
+  }
+
+  footer span { color: var(--cyan); }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    nav ul { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    .terminal-body { padding: 1rem 1.25rem 1.5rem; font-size: 0.8rem; }
+    .section-title { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">sr<span>@</span>ninja<span>:~$</span></div>
+  <ul>
+    <li><a href="#about">about</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#labs">labs</a></li>
+    <li><a href="#education">education</a></li>
+    <li><a href="#contact">contact</a></li>
+    <li><a href="https://www.linkedin.com/in/sriram-r-603baa3b6" target="_blank">linkedin ↗</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span class="terminal-title">bash — sriram@ninja: ~</span>
+      </div>
+      <div class="terminal-body" id="terminal-output">
+        <div><span class="term-prompt">$ </span><span class="term-cmd" id="cmd1"></span></div>
+        <div id="output-block" style="display:none">
+          <div style="margin-top:0.5rem">
+            <span class="term-key">name</span><span class="term-output">: </span><span class="term-val">Sriram Rajasekaran</span>
+          </div>
+          <div>
+            <span class="term-key">role</span><span class="term-output">: </span><span class="term-val">Cybersecurity Enthusiast &amp; Systems Programmer</span>
+          </div>
+          <div>
+            <span class="term-key">education</span><span class="term-output">: </span><span class="term-val">B.Tech AI &amp; Data Science</span>
+          </div>
+          <div>
+            <span class="term-key">training</span><span class="term-output">: </span><span class="term-val">LAHTP – Legacy @ Selfmade Ninja Academy</span>
+          </div>
+          <div>
+            <span class="term-key">focus</span><span class="term-output">: </span><span class="term-val">[ ethical_hacking, C_programming, linux, web_security ]</span>
+          </div>
+          <div>
+            <span class="term-key">status</span><span class="term-output">: </span><span class="term-val" style="color:#28C840">open_to_opportunities</span>
+          </div>
+          <div style="margin-top:0.75rem">
+            <span class="term-prompt">$ </span><span class="cursor"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-tagline">fresher · cybersecurity · kolkata, india</div>
+    <div class="hero-ctas">
+      <a href="#labs" class="btn btn-primary">View Labs →</a>
+      <a href="#contact" class="btn btn-outline">Get in Touch</a>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="reveal">
+    <div class="section-label">// 01 — whoami</div>
+    <div class="section-title">About Me</div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm <strong>Sriram Rajasekaran</strong>, a B.Tech graduate in Artificial Intelligence & Data Science who went deep into the world of cybersecurity and low-level systems programming through rigorous self-study.</p>
+        <p>I completed the <strong>LAHTP – Legacy</strong> program at Selfmade Ninja Academy — a 69-module course covering everything from computer architecture and C programming to ethical hacking, binary exploitation, and web application security.</p>
+        <p>I don't just read theory. I run labs. I break things in controlled environments, debug at the assembly level with GDB, and understand <em>why</em> vulnerabilities exist — not just that they do.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-box">
+          <span class="stat-num">69</span>
+          <div class="stat-label">Modules Completed</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">6+</span>
+          <div class="stat-label">Lab Categories</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">3+</span>
+          <div class="stat-label">Languages Learned</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">∞</span>
+          <div class="stat-label">Curiosity</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="reveal">
+    <div class="section-label">// 02 — skill_set</div>
+    <div class="section-title">Technical Skills</div>
+    <div class="skills-grid">
+
+      <div class="skill-card">
+        <div class="skill-card-icon">🔐</div>
+        <div class="skill-card-title">Cybersecurity</div>
+        <div class="skill-tags">
+          <span class="tag">SQL Injection</span>
+          <span class="tag">XSS</span>
+          <span class="tag">CSRF</span>
+          <span class="tag">ARP Spoofing</span>
+          <span class="tag">DNS Spoofing</span>
+          <span class="tag">DoS / DDoS</span>
+          <span class="tag">Session Hijacking</span>
+          <span class="tag">Buffer Overflow</span>
+          <span class="tag">XZ Backdoor</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-icon">⚙️</div>
+        <div class="skill-card-title">Systems Programming</div>
+        <div class="skill-tags">
+          <span class="tag">C Programming</span>
+          <span class="tag">Pointers</span>
+          <span class="tag">Memory Allocation</span>
+          <span class="tag">File I/O</span>
+          <span class="tag">Structs & Unions</span>
+          <span class="tag">x86-64 Assembly</span>
+          <span class="tag">GDB Debugger</span>
+          <span class="tag">objdump</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-icon">🐧</div>
+        <div class="skill-card-title">Linux & Infrastructure</div>
+        <div class="skill-tags">
+          <span class="tag">Ubuntu Linux</span>
+          <span class="tag">SSH (Ed25519)</span>
+          <span class="tag">WireGuard VPN</span>
+          <span class="tag">Cron Jobs</span>
+          <span class="tag">Home Server</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Git / GitLab</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-icon">🌐</div>
+        <div class="skill-card-title">Web & Backend</div>
+        <div class="skill-tags">
+          <span class="tag">PHP</span>
+          <span class="tag">PHP OOP</span>
+          <span class="tag">PHP Sessions</span>
+          <span class="tag">REST API</span>
+          <span class="tag">HTML & CSS</span>
+          <span class="tag">Bootstrap</span>
+          <span class="tag">RDBMS / SQL</span>
+          <span class="tag">Hashing & Encryption</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-icon">🔑</div>
+        <div class="skill-card-title">Cryptography</div>
+        <div class="skill-tags">
+          <span class="tag">Hashing Algorithms</span>
+          <span class="tag">Encoding Schemes</span>
+          <span class="tag">Encryption</span>
+          <span class="tag">Password Storage</span>
+          <span class="tag">Fingerprinting</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-icon">🧠</div>
+        <div class="skill-card-title">CS Fundamentals</div>
+        <div class="skill-tags">
+          <span class="tag">Computer Architecture</span>
+          <span class="tag">OS Internals</span>
+          <span class="tag">Memory Segmentation</span>
+          <span class="tag">DNS</span>
+          <span class="tag">Networking</span>
+          <span class="tag">AI & Data Science</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- LABS -->
+<section id="labs">
+  <div class="reveal">
+    <div class="section-label">// 03 — hands_on_labs</div>
+    <div class="section-title">Lab Work & Practice</div>
+    <div class="labs-list">
+
+      <div class="lab-item">
+        <div class="lab-num">01</div>
+        <div>
+          <div class="lab-title">Web Application Attack Simulation</div>
+          <div class="lab-desc">Performed SQL Injection and Cross-Site Scripting (XSS) attacks in controlled lab environments. Analysed how user input is unsanitised and exploitable, and studied defences like parameterised queries and CSP headers.</div>
+          <div class="lab-tags">
+            <span class="lab-tag">SQLi</span>
+            <span class="lab-tag">XSS</span>
+            <span class="lab-tag">CSRF</span>
+            <span class="lab-tag">PHP</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lab-item">
+        <div class="lab-num">02</div>
+        <div>
+          <div class="lab-title">Buffer Overflow Exploitation (Docker Lab)</div>
+          <div class="lab-desc">Practised stack-based buffer overflow attacks inside Docker containers. Used GDB to inspect stack frames, identify return addresses, and understand how memory corruption enables code execution.</div>
+          <div class="lab-tags">
+            <span class="lab-tag">Buffer Overflow</span>
+            <span class="lab-tag">GDB</span>
+            <span class="lab-tag">Docker</span>
+            <span class="lab-tag">x86-64</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lab-item">
+        <div class="lab-num">03</div>
+        <div>
+          <div class="lab-title">x86-64 Assembly & Binary Analysis</div>
+          <div class="lab-desc">Analysed compiled C programs using GDB and objdump. Read function prologues/epilogues, understood LEA vs MOV, traced loop structures in assembly, and used breakpoints and watchpoints for runtime inspection.</div>
+          <div class="lab-tags">
+            <span class="lab-tag">GDB</span>
+            <span class="lab-tag">objdump</span>
+            <span class="lab-tag">Assembly</span>
+            <span class="lab-tag">C</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lab-item">
+        <div class="lab-num">04</div>
+        <div>
+          <div class="lab-title">Home Server + VPN Setup</div>
+          <div class="lab-desc">Set up a home server with SSH key authentication (Ed25519) and configured WireGuard VPN for secure remote access. Managed cron jobs for automation and practised Linux administration tasks.</div>
+          <div class="lab-tags">
+            <span class="lab-tag">SSH</span>
+            <span class="lab-tag">WireGuard</span>
+            <span class="lab-tag">Linux</span>
+            <span class="lab-tag">Cron</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lab-item">
+        <div class="lab-num">05</div>
+        <div>
+          <div class="lab-title">Photogram – Secure PHP Web App</div>
+          <div class="lab-desc">Built a PHP web application with secure authentication: password hashing, session management, database access via PHP, and OOP principles. Studied how session tokens can be manipulated and how to prevent it.</div>
+          <div class="lab-tags">
+            <span class="lab-tag">PHP OOP</span>
+            <span class="lab-tag">Sessions</span>
+            <span class="lab-tag">MySQL</span>
+            <span class="lab-tag">Bootstrap</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lab-item">
+        <div class="lab-num">06</div>
+        <div>
+          <div class="lab-title">Network Attack Concepts</div>
+          <div class="lab-desc">Studied and simulated ARP spoofing, DNS spoofing, and DoS/DDoS attack vectors. Understood how these attacks intercept or disrupt traffic at the network layer and explored mitigation strategies.</div>
+          <div class="lab-tags">
+            <span class="lab-tag">ARP Spoofing</span>
+            <span class="lab-tag">DNS</span>
+            <span class="lab-tag">DoS/DDoS</span>
+            <span class="lab-tag">Networking</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="reveal">
+    <div class="section-label">// 04 — education &amp; training</div>
+    <div class="section-title">Education & Certifications</div>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-label">B.Tech · Completed</div>
+        <div class="timeline-title">Artificial Intelligence & Data Science</div>
+        <div class="timeline-sub">India</div>
+        <div class="timeline-desc">Four-year undergraduate program covering machine learning, data science fundamentals, algorithms, statistics, and programming. This background complements cybersecurity with analytical and algorithmic thinking.</div>
+      </div>
+
+      <div class="timeline-item" style="border-left-color: var(--orange)">
+        <div class="timeline-label" style="color:var(--orange)">Selfmade Ninja Academy · 69 Modules</div>
+        <div class="timeline-title">LAHTP – Legacy (Learn Advanced Hacking & Programming)</div>
+        <div class="timeline-sub">academy.selfmade.ninja</div>
+        <div class="timeline-desc">
+          Comprehensive hands-on program spanning: computer architecture, Linux & OS internals, C programming (from fundamentals to memory exploitation), GDB debugging, x86-64 assembly, PHP web development, database security, cryptography, network attacks (ARP/DNS spoofing, DoS/DDoS), web application attacks (SQLi, XSS, CSRF), session management, buffer overflows, Docker, SSH, and supply chain attack analysis (XZ Backdoor).
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="reveal">
+    <div class="section-label">// 05 — reach_out</div>
+    <div class="section-title">Get In Touch</div>
+    <div class="contact-box">
+      <p>I'm actively looking for entry-level cybersecurity or systems programming opportunities. If you're hiring, collaborating, or just want to talk about hacking and low-level programming — reach out.</p>
+      <div style="font-family:var(--mono);color:var(--cyan);font-size:0.9rem;margin-bottom:1.5rem;line-height:2">
+        📍 Salem, Tamil Nadu, India &nbsp;·&nbsp; Open to Remote<br>
+        📧 <a href="mailto:sriram6957@gmail.com" style="color:var(--cyan);text-decoration:underline;">sriram6957@gmail.com</a>
+        &nbsp;·&nbsp;
+        📞 <a href="tel:+919789496714" style="color:var(--cyan);text-decoration:underline;">+91 97894 96714</a>
+        &nbsp;·&nbsp;
+        <a href="https://www.linkedin.com/in/sriram-r-603baa3b6" target="_blank" style="color:var(--cyan);text-decoration:underline;">LinkedIn ↗</a>
+      </div>
+      <a href="mailto:sriram6957@gmail.com" class="btn btn-primary">📧 Email Me</a>
+      <a href="https://www.linkedin.com/in/sriram-r-603baa3b6" target="_blank" class="btn btn-outline">LinkedIn ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  built by <span>Sriram Rajasekaran</span> · cybersecurity fresher · 2026
+</footer>
+
+<script>
+  // Terminal typing animation
+  const cmd1 = document.getElementById('cmd1');
+  const outputBlock = document.getElementById('output-block');
+  const text = 'cat profile.json';
+  let i = 0;
+
+  function typeCmd() {
+    if (i < text.length) {
+      cmd1.textContent += text[i++];
+      setTimeout(typeCmd, 70 + Math.random() * 40);
+    } else {
+      setTimeout(() => {
+        outputBlock.style.display = 'block';
+      }, 300);
+    }
+  }
+
+  setTimeout(typeCmd, 800);
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  revealEls.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
